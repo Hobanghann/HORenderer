@@ -15,6 +15,15 @@ target_include_directories(headers PUBLIC ../Engine/include)
 
 target_link_libraries(headers PUBLIC SDL2::SDL2 SDL2::SDL2main)
 
+file(GLOB MAIN_HEADER
+    "${CMAKE_CURRENT_SOURCE_DIR}/Headers.h")
+
+file(GLOB MAIN_SOURCE
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+
+source_group("include" FILES ${MAIN_HEADER})
+source_group("source" FILES ${MAIN_SOURCE})
+
 add_subdirectory(../Math
 ../Math/bin)
 add_subdirectory(../Resource

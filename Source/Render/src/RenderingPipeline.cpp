@@ -6,22 +6,22 @@ void RenderingPipeline::DrawLine(const Vector2& InStartPoint, const Vector2& InE
 	SDL_RenderDrawLine(mOwner->mRenderer, static_cast<int>(InStartPoint.X), static_cast<int>(InStartPoint.Y), static_cast<int>(InEndPoint.X), static_cast<int>(InEndPoint.Y));
 }
 
-void RenderingPipeline::DrawTriangle(const std::vector<Vector2>& InPixelBuffer, Mesh::Triangle InTriangle, RenderingMode InMode) const {
-	Vector2 p1 = InPixelBuffer[InTriangle.Index1];
-	Vector2 p2 = InPixelBuffer[InTriangle.Index2];
-	Vector2 p3 = InPixelBuffer[InTriangle.Index3];
+void RenderingPipeline::DrawTriangle(const std::vector<Vertex>& InVertexBuffer, Mesh::Triangle InTriangle, RenderingMode InMode) const {
+	Vector2 p1 = InVertexBuffer[InTriangle.Index1].GetPixel();
+	Vector2 p2 = InVertexBuffer[InTriangle.Index2].GetPixel();
+	Vector2 p3 = InVertexBuffer[InTriangle.Index3].GetPixel();
 	DrawLine(p1, p2);
 	DrawLine(p2, p3);
 	DrawLine(p3, p1);
-	if (InMode == eFill) {
-		FillTriangle(InPixelBuffer, InTriangle);
+	if ((InMode & eWireFrameMode) == 0) {
+		FillTriangle(InVertexBuffer, InTriangle);
 	}
 }
 
-void RenderingPipeline::FillTriangle(const std::vector<Vector2>& InPixelBuffer, const Mesh::Triangle& InTriangle) const {
-	Vector2 p1 = InPixelBuffer[InTriangle.Index1];
-	Vector2 p2 = InPixelBuffer[InTriangle.Index2];
-	Vector2 p3 = InPixelBuffer[InTriangle.Index3];
+void RenderingPipeline::FillTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle) const {
+	Vector2 p1 = InVertexBuffer[InTriangle.Index1].GetPixel();
+	Vector2 p2 = InVertexBuffer[InTriangle.Index2].GetPixel();
+	Vector2 p3 = InVertexBuffer[InTriangle.Index3].GetPixel();
 
 	Vector2 min, max;
 	min.X = std::min({ p1.X, p2.X, p3.X });
@@ -48,9 +48,33 @@ void RenderingPipeline::FillTriangle(const std::vector<Vector2>& InPixelBuffer, 
 
 	for (int i = static_cast<int>(min.X); i < static_cast<int>(max.X); i++) {
 		for (int j = static_cast<int>(min.Y); j < static_cast<int>(max.Y); j++) {
-			if (IsInTriangle(InPixelBuffer, InTriangle, Vector2(static_cast<float>(i), static_cast<float>(j)), denominator)) {
+			if (IsInTriangle(InVertexBuffer, InTriangle, Vector2(static_cast<float>(i), static_cast<float>(j)), denominator)) {
 				SDL_RenderDrawPoint(mOwner->mRenderer, i, j);
 			}
 		}
+	}
+}
+
+void HO::RenderingPipeline::SetRenderingColor(const std::string InColor) const{
+	if(InColor == "BLACK"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 0, 0, 0, 255);
+	}
+	else if(InColor == "WHITE"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 255, 255, 255, 255);
+	}
+	else if(InColor == "RED"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 255, 0, 0, 255);
+	}
+	else if(InColor == "BLUE"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 0, 255, 0, 255);
+	}
+	else if(InColor == "GREEN"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 0, 0, 255, 255);
+	}
+	else if(InColor == "YELLOW"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 255, 255, 0, 255);
+	}
+	else if(InColor == "PURPLE"){
+		SDL_SetRenderDrawColor(mOwner->mRenderer, 153, 051, 204, 255);
 	}
 }

@@ -17,7 +17,7 @@ namespace HO {
 		Mesh(const std::string InName, const std::vector<Vertex> InVertices, const std::list<Triangle> InIndices) :mName(InName), mVertexBuffer(InVertices), mIndexBuffer(InIndices) {}
 
 		inline std::string GetName() const;
-		inline const std::vector<Vertex> &GetVertexBuffer() const;
+		inline std::vector<Vertex> GetVertexBuffer() const;
 		inline const std::list<Triangle> GetIndexBuffer() const;
 
 	public:
@@ -25,7 +25,7 @@ namespace HO {
 
 	private:
 		const std::string mName;
-		const std::vector<Vertex> mVertexBuffer;
+		std::vector<Vertex> mVertexBuffer;
 		const std::list<Triangle> mIndexBuffer;
 	};
 }
@@ -34,7 +34,7 @@ namespace HO {
 std::string HO::Mesh::GetName() const {
 	return mName;
 }
-const std::vector<HO::Vertex> &HO::Mesh::GetVertexBuffer() const {
+std::vector<HO::Vertex> HO::Mesh::GetVertexBuffer() const {
 	return mVertexBuffer;
 }
 const std::list<HO::Mesh::Triangle> HO::Mesh::GetIndexBuffer() const {

@@ -25,7 +25,7 @@ namespace HO {
 		void mRender();
 
 		GameObject* mGetGameObject(const std::string&) const;
-		void mAddGameObject(const std::string&, GameObject*);
+		void mAddGameObject(GameObject*);
 		void mRemoveGameObject(const std::string&);
 
 		Mesh* mGetMesh(const std::string&) const;
@@ -34,6 +34,7 @@ namespace HO {
 
 	private:
 		inline void mUpdateEngineStatus();
+		inline int mGetRenderingMode() const;
 
 	private:
 		SDL_Window* mWindow = nullptr;
@@ -44,7 +45,7 @@ namespace HO {
 		Uint32 mTickCount = 0;
 		Uint32 mFrameCount = 0;
 
-		std::unordered_map<std::string, GameObject*> mScene;
+		std::vector<GameObject*> mScene;
 		std::unordered_map<std::string, Mesh*> mMeshes;
 
 		CameraObject mMainCamera;
@@ -54,6 +55,7 @@ namespace HO {
 	private:
 		bool mbUseWireFrameMode = true;
 		bool mbUseBackfaceCulling = true;
+		bool mbUseDepthTesting = true;
 	};
 }
 
@@ -67,6 +69,7 @@ void HO::GameEngine::mUpdateEngineStatus() {
 				mbUseBackfaceCulling = !mbUseBackfaceCulling;
 				break;
 			case EngineInputHandler::F3:
+				mbUseDepthTesting = !mbUseDepthTesting;
 				break;
 			case EngineInputHandler::F4:
 				break;
@@ -88,4 +91,18 @@ void HO::GameEngine::mUpdateEngineStatus() {
 				break;
 		}
 	}
+}
+
+int HO::GameEngine::mGetRenderingMode() const{
+	int renderingMode = 0;
+	if(mbUseWireFrameMode){
+		renderingMode |= 0b0001;
+	}
+	if(mbUseBackfaceCulling){
+		renderingMode |= 0b0010;
+	}
+	if(mbUseDepthTesting){
+		renderingMode |= 0b0100;
+	}
+	return renderingMode;
 }

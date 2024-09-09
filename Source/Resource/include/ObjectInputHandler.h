@@ -13,14 +13,16 @@ namespace HO {
 			UP,
 			DOWN,
 			LEFT,
-			RIGHT
+			RIGHT,
+			PAGEUP,
+			PAGEDOWN
 		};
 
 	public:
 		ObjectInputHandler(class Object* InObject) : mOwner(InObject) {}
 		inline void ClearInputStatus();
 		inline void SetInputs(const Uint8 *InKeyStatus);
-		inline std::set<Keys> &GetInputs();
+		inline const std::set<Keys> &GetInputs() const;
 
 	public:
 		static const float POSITIVE;
@@ -68,8 +70,14 @@ void HO::ObjectInputHandler::SetInputs(const Uint8* InKeyStatus) {
 	if (InKeyStatus[SDL_SCANCODE_RIGHT]) {
 		mKeyStatus.insert(RIGHT);
 	}	
+	if (InKeyStatus[SDL_SCANCODE_PAGEUP]) {
+		mKeyStatus.insert(PAGEUP);
+	}	
+	if (InKeyStatus[SDL_SCANCODE_PAGEDOWN]) {
+		mKeyStatus.insert(PAGEDOWN);
+	}	
 }
 
-std::set<HO::ObjectInputHandler::Keys> &HO::ObjectInputHandler::GetInputs(){
+const std::set<HO::ObjectInputHandler::Keys> &HO::ObjectInputHandler::GetInputs() const{
 	return mKeyStatus;
 }

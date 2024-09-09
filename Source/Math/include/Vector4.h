@@ -23,6 +23,7 @@ namespace HO {
 		inline void Normalize();
 		inline Vector4 GetNormalized() const;
 		inline Vector3 ToVector3() const;
+		inline Vector2 ToVector2() const;
 
 	public:
 		float X = 0.f;
@@ -96,5 +97,9 @@ HO::Vector4 HO::Vector4::GetNormalized() const {
 }
 
 HO::Vector3 HO::Vector4::ToVector3() const {
-	return Vector3(X / W, Y / W, Z / W);
+	return Vector3(X, Y, Z);
+}
+
+HO::Vector2 HO::Vector4::ToVector2() const{
+	return Vector2(X, Y);
 }
