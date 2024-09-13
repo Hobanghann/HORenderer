@@ -33,7 +33,7 @@ namespace HO {
 		class DepthBuffer *GetDepthBuffer() const; 
 		inline void ResetBuffer();
 
-		void FrustrumCullling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const;
+		void FrustrumCulling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const;
 	private:
 		class GameEngine* mOwner;
 		class DepthBuffer *mDepthBuffer;

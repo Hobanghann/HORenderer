@@ -14,6 +14,9 @@ namespace HO {
 		inline Vector2& operator+=(const Vector2& InVector);
 		inline Vector2 operator-(const Vector2& InVector) const;
 		inline Vector2& operator-=(const Vector2& InVector);
+
+		//unary minus operator
+		inline Vector2 operator-() const;
 		//comparison
 		inline bool operator==(const Vector2& InVector) const;
 		inline bool operator!=(const Vector2& InVector) const;
@@ -70,6 +73,10 @@ HO::Vector2& HO::Vector2::operator-=(const Vector2& InVector) {
 	X -= InVector.X;
 	Y -= InVector.Y;
 	return *this;
+}
+
+HO::Vector2 HO::Vector2::operator-() const {
+	return *this * -1.f;
 }
 
 

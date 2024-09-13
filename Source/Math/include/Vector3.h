@@ -14,6 +14,8 @@ namespace HO {
 		inline Vector3& operator+=(const Vector3& InVector);
 		inline Vector3 operator-(const Vector3& InVector) const;
 		inline Vector3& operator-=(const Vector3& InVector);
+
+		inline Vector3 operator-() const;
 		//dot product
 		inline float Dot(const Vector3& InVector) const;
 		//cross product
@@ -68,6 +70,11 @@ HO::Vector3& HO::Vector3::operator-=(const Vector3& InVector) {
 	Z -= InVector.Z;
 	return *this;
 }
+
+HO::Vector3 HO::Vector3::operator-() const {
+	return *this * -1.f;
+}
+
 //dot product
 float HO::Vector3::Dot(const Vector3& InVector) const {
 	return X * InVector.X + Y * InVector.Y + Z * InVector.Z;

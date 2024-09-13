@@ -2,6 +2,12 @@
 
 using namespace HO;
 
+CameraObject::CameraObject(class GameEngine* InGameEngine) :
+	Object(this),
+	mOwner(InGameEngine) {
+	mFrustrum = new Frustrum(mFOV, mOwner->mWindowWidth, mOwner->mWindowHeight, mNearPlane, mFarPlane);
+}
+
 void CameraObject::Update(float InDeltaTime) {
 	for (const auto &key : mInputHandler.GetInputs()) {
 		switch (key) {
@@ -44,7 +50,7 @@ void CameraObject::Update(float InDeltaTime) {
 }
 
 Matrix4x4 CameraObject::GetViewMatrixTowardObject(class GameObject* InGameObject) const {
-	SDL_Log("load view Matrix from %p", InGameObject);
+	//SDL_Log("load view Matrix from %p", InGameObject);
 	Vector3 forwardVector = (InGameObject->GetTransform().GetPosition() - mTransformComponent.GetPosition()).GetNormalized();
 	Vector3 rightVector = forwardVector.Cross(Vector3::UnitY);
 
@@ -63,16 +69,16 @@ Matrix4x4 CameraObject::GetViewMatrixTowardObject(class GameObject* InGameObject
 		Vector4(forwardVector.X, forwardVector.Y, forwardVector.Z, 0.f),
 		Vector4::UnitW
 	);
-	SDL_Log("loading view Matrix finished");
+	//SDL_Log("loading view Matrix finished");
 	return rotationMatrix.Transpose() * mTransformComponent.GetInverseTranslationMatrix();
 }
 
 Matrix4x4 CameraObject::GetProjectionMatrix() const {
-	SDL_Log("load projection Matrix");
+	//SDL_Log("load projection Matrix");
 	float foctalLength = 1.f / tanf(mFOV * 0.5f);
 	float InvAspectRatio = 1.f / (static_cast<float>(mOwner->mWindowWidth) / static_cast<float>(mOwner->mWindowHeight));
 	float InvNearMinusFar = 1.f / (mNearPlane - mFarPlane);
-	SDL_Log("loading projection Matrix finished");
+	//SDL_Log("loading projection Matrix finished");
 	return Matrix4x4(
 		Vector4(foctalLength * InvAspectRatio, 0.f, 0.f, 0.f),
 		Vector4(0.f, foctalLength, 0.f, 0.f),

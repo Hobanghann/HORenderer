@@ -1,14 +1,16 @@
+#pragma once
+
 namespace HO{
     class Plane{
         public:
         Plane() = default;
-        Plane(Vector3 InNormalVector, Vector3 InPoint): 
+        Plane(Vector3 InNormalVector, Vector3 InPoint, bool InIsTorawdOrigin): 
         mNormalVector(InNormalVector.GetNormalized()), 
         mPoint(InPoint), 
         mDValue(mNormalVector.Dot(mPoint)),
-        mbIsTowardOrigin((mDValue > 0) ? false : true) {}
+        mbIsTowardOrigin(InIsTorawdOrigin) {}
 
-        inline float GetDistance() const;
+        inline float GetDistanceToOrigin() const;
         inline bool IsTowardOrigin() const;
         inline bool IsInPlane(const Vector3 &InPoint) const;
 
@@ -20,7 +22,7 @@ namespace HO{
     };
 }
 
-float HO::Plane::GetDistance() const{
+float HO::Plane::GetDistanceToOrigin() const{
     return std::fabsf(mNormalVector.Dot(mPoint));
 }
 
@@ -30,20 +32,22 @@ bool HO::Plane::IsTowardOrigin() const{
 
 bool HO::Plane::IsInPlane(const Vector3 &InPoint) const{
     float normalDotPoint = mNormalVector.Dot(InPoint);
+    bool isIn;
     if(mbIsTowardOrigin){ 
-        if(normalDotPoint > mDValue){
-            return true;
+        if(normalDotPoint >= mDValue){
+            isIn = false;
         }
         else {
-            return false;
+            isIn = true;
         }
     }
     else {
-        if(normalDotPoint < mDValue){
-            return true;
+        if(normalDotPoint <= mDValue){
+            isIn = true;
         }
         else {
-            return false;
+            isIn = false;
         }
     }
+    return isIn;
 }

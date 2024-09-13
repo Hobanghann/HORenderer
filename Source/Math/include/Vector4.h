@@ -14,6 +14,8 @@ namespace HO {
 		inline Vector4& operator+=(const Vector4& InVector);
 		inline Vector4 operator-(const Vector4& InVector) const;
 		inline Vector4& operator-=(const Vector4& InVector);
+
+		inline Vector4 operator-() const;
 		//dot product
 		inline float Dot(const Vector4& InVector) const;
 		//magnitude
@@ -72,6 +74,11 @@ HO::Vector4& HO::Vector4::operator-=(const Vector4& InVector) {
 	W -= InVector.W;
 	return *this;
 }
+
+HO::Vector4 HO::Vector4::operator-() const {
+	return *this * -1.f;
+}
+
 //dot product
 float HO::Vector4::Dot(const Vector4& InVector) const {
 	return X * InVector.X + Y * InVector.Y + Z * InVector.Z + W * InVector.W;

@@ -6,7 +6,11 @@ using namespace HO;
 
 bool GameEngine::Initialize()
 {	
+
+#ifdef DEBUG
 	SDL_Log("start initialization");
+#endif
+
 	bool bSuccess = true;
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
@@ -37,7 +41,10 @@ bool GameEngine::Initialize()
 			}
 		}
 	}
+
+#ifdef DEBUG
 	SDL_Log("finish initialization");
+#endif
 	return bSuccess;
 }
 
@@ -94,14 +101,14 @@ void GameEngine::mLoadScene()
 	mAddGameObject(newObject);
 
 	std::mt19937 randomEngine(0);
-	std::uniform_real_distribution<float> distributionZ(-1000.f, -500.f);
-	std::uniform_real_distribution<float> distributionXY(-2000.f, 2000.f);
+	std::uniform_real_distribution<float> distributionZ(-1000.f, 0.f);
+	std::uniform_real_distribution<float> distributionXY(-3000.f, 3000.f);
 
 #ifdef DEBUG
 	SDL_Log("start load subobject");
 #endif
 
-	for (int i = 1; i <= 10; i++)
+	for (int i = 1; i <= 50; i++)
 	{
 		char objectName[10];
 		sprintf(objectName, "BOX%d", i);
@@ -117,7 +124,7 @@ void GameEngine::mLoadScene()
 #endif
 
 	Transform &CameraTransform = mMainCamera.GetTransform();
-	CameraTransform.SetPosition(Vector3(0.f, 30.f, 500.f));
+	CameraTransform.SetPosition(Vector3(0.f, 0.f, 500.f));
 	CameraTransform.SetYawAngle(PI);
 }
 
@@ -183,7 +190,8 @@ void GameEngine::mUpdate()
 }
 
 void GameEngine::mRender()
-{
+{	
+	int numCulled = 0;
 	
 	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(mRenderer);
@@ -197,12 +205,20 @@ void GameEngine::mRender()
 	if(mbUseFrustrumCulling){
 		Matrix4x4 viewMatrix = mMainCamera.GetViewMatrix();
 		for(auto gameObject : mScene){
-			mRenderingPipeline.FrustrumCullling(gameObject, viewMatrix);
+			mRenderingPipeline.FrustrumCulling(gameObject, viewMatrix);
 		}
 	}
 
 	for (GameObject *box : mScene)
-	{	SDL_Log("check");
+	{	
+
+		if (mbUseBackfaceCulling) {
+			if (!box->IsInFrustrum()) {
+				numCulled++;
+				continue;
+			}
+		}
+
 		std::vector<Vertex> vertexBuffer = box->GetMesh()->GetVertexBuffer();
 		
 #ifdef DEBUG
@@ -302,6 +318,8 @@ void GameEngine::mRender()
 #ifdef DEBUG
 	SDL_Log("swap buffer");
 #endif
+
+	SDL_Log("culled object : %d", numCulled);
 
 	SDL_RenderPresent(mRenderer);
 

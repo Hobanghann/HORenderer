@@ -120,8 +120,8 @@ DepthBuffer *RenderingPipeline::GetDepthBuffer() const
 	return mDepthBuffer;
 }
 
-void RenderingPipeline::FrustrumCullling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const{
-	Vector4 positionInView = InViewMatrix * InGameObject->GetPosition();
+void RenderingPipeline::FrustrumCulling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const{
+	Vector4 positionInView = InViewMatrix * Vector4(InGameObject->GetPosition());
 	const Frustrum *frustrum = mOwner->mMainCamera.GetFrustrum();
 	if(frustrum->IsInFrustrum(positionInView.ToVector3())){
 		InGameObject->SetInFrustrum();

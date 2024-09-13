@@ -3,11 +3,7 @@
 namespace HO {
 	class CameraObject : public Object{
 	public:
-		CameraObject(class GameEngine *InGameEngine):
-		Object(this), 
-		mOwner(InGameEngine) {
-			mFrustrum = new Frustrum(mFOV, mNearPlane, mFarPlane);
-		}
+		CameraObject(class GameEngine* InGameEngine);
 		void Update(float InDeltaTime) override;
 		inline Matrix4x4 GetViewMatrix() const;
 		Matrix4x4 GetViewMatrixTowardObject(class GameObject*) const;
@@ -20,7 +16,7 @@ namespace HO {
 		float mFOVSpeed = PI * 0.1f;
 		float mFOV = PI / 3.f;
 		float mNearPlane = 5.5f;
-		float mFarPlane = 1000.f;
+		float mFarPlane = 5000.f;
 		class GameEngine* mOwner = nullptr;
 		class Frustrum* mFrustrum = nullptr;
 	};
