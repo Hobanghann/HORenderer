@@ -50,7 +50,7 @@ namespace HO {
 		inline void SetYawAngle(float InAngle);
 		inline void SetScale(float InScale);
 
-		inline void UpdatePosition(float InDeltaTime, float InInputStatus);
+		inline void UpdatePositionZ(float InDeltaTime, float InInputStatus);
 		inline void UpdateRollAngle(float InDeltaTime, float InInputStatus);
 		inline void UpdatePitchAngle(float InDeltaTime, float InInputStatus);
 		inline void UpdateYawAngle(float InDeltaTime, float InInputStatus);
@@ -72,7 +72,7 @@ namespace HO {
 		float mYawAngle = 0.f;
 		float mScale = 1.f;
 
-		float mMoveSpeed = 10.f;
+		float mMoveSpeed = 50.f;
 		float mRotationSpeed = 3.f;
 		float mScaleSpeed = 3.f;
 	};
@@ -192,8 +192,9 @@ void HO::Transform::SetScale(float InScale) {
 	mScale = InScale;
 }
 
-void HO::Transform::UpdatePosition(float InDeltaTime, float InInputStatus) {
-
+void HO::Transform::UpdatePositionZ(float InDeltaTime, float InInputStatus) {
+	Vector3 currentPosition = mPosition;
+	mPosition = Vector3(currentPosition.X, currentPosition.Y, currentPosition.Z + InDeltaTime * InInputStatus * mMoveSpeed);
 }
 void HO::Transform::UpdateRollAngle(float InDeltaTime, float InInputStatus) {
 	mRollAngle += InInputStatus * mRotationSpeed * InDeltaTime;

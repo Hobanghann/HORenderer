@@ -2,16 +2,18 @@ cmake_minimum_required(VERSION 3.20)
 
 project(MathModule)
 
+file(GLOB SOURCES "src/*.cpp")
+file(GLOB HEADERS "include/*.h")
+
 add_library(
-    math 
+    MathModule 
     STATIC
-    src/MathFunctions.cpp
-    src/Vector2.cpp
-    src/Vector3.cpp
-    src/Vector4.cpp
-    src/Matrix3x3.cpp)
+    ${SOURCES}
+    ${HEADERS}
+    )
 
+target_link_libraries(MathModule PUBLIC SDL2::SDL2 SDL2::SDL2main)
+target_include_directories(MathModule PUBLIC ../Main/include)
 
-target_include_directories(math PUBLIC ../Main/include)
-target_link_libraries(math PUBLIC headers)
-target_link_directories(math PUBLIC ../Main/bin)
+source_group("Source" REGULAR_EXPRESSION "src/.*\\.cpp")
+source_group("Include" REGULAR_EXPRESSION "include/.*\\.h")

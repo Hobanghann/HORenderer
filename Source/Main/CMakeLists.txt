@@ -5,24 +5,26 @@ project(
     LANGUAGES CXX
     )
 
-add_library(headers STATIC src/Headers.cpp)
+    file(GLOB SOURCES "src/*.cpp")
+    file(GLOB HEADERS "include/*.h")
 
-target_include_directories(headers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(headers PUBLIC ../Math/include)
-target_include_directories(headers PUBLIC ../Resource/include)
-target_include_directories(headers PUBLIC ../Render/include)
-target_include_directories(headers PUBLIC ../Engine/include)
+add_executable(
+    HORenderer 
+    ${SOURCES} 
+    ${HEADERS})
 
-target_link_libraries(headers PUBLIC SDL2::SDL2 SDL2::SDL2main)
+target_include_directories(HORenderer PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(HORenderer PUBLIC ../Math/include)
+target_include_directories(HORenderer PUBLIC ../Resource/include)
+target_include_directories(HORenderer PUBLIC ../Render/include)
+target_include_directories(HORenderer PUBLIC ../Engine/include)
 
-file(GLOB MAIN_HEADER
-    "${CMAKE_CURRENT_SOURCE_DIR}/Headers.h")
 
-file(GLOB MAIN_SOURCE
-    "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
-
-source_group("include" FILES ${MAIN_HEADER})
-source_group("source" FILES ${MAIN_SOURCE})
+target_link_libraries(HORenderer PUBLIC SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(HORenderer PUBLIC MathModule)
+target_link_libraries(HORenderer PUBLIC ResourceModule)
+target_link_libraries(HORenderer PUBLIC RenderModule)
+target_link_libraries(HORenderer PUBLIC EngineModule)
 
 add_subdirectory(../Math
 ../Math/bin)
@@ -32,3 +34,6 @@ add_subdirectory(../Render
 ../Render/bin)
 add_subdirectory(../Engine
 ../Engine/bin)
+
+source_group("Source" REGULAR_EXPRESSION "src/.*\\.cpp")
+source_group("Include" REGULAR_EXPRESSION "include/.*\\.h")

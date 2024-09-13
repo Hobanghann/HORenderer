@@ -17,11 +17,17 @@ namespace HO {
 		bool IsItOutOfView(const GameObject* InObejct, float InFOV) const;
 		bool IsItOnFront(const GameObject* InObject) const;
 		bool IsItOnBehind(const GameObject* InObject) const;
+
+		inline bool IsInFrustrum() const;
+		inline void SetInFrustrum();
+		inline void GetOutOfFrustrum();
+
 	private:
 		std::string mName;
 		Mesh* mMesh;
 
 		bool mbIsMainObject = false;
+		bool mbIsInFrustrum = true;
 	};
 }
 
@@ -44,4 +50,14 @@ bool HO::GameObject::IsMainObject() const{
 
 void HO::GameObject::SetMainObject(){
 	mbIsMainObject = true;
+}
+
+bool HO::GameObject::IsInFrustrum() const{
+	return mbIsInFrustrum;
+}
+void HO::GameObject::SetInFrustrum(){
+	mbIsInFrustrum = true;
+}
+void HO::GameObject::GetOutOfFrustrum(){
+	mbIsInFrustrum = false;
 }

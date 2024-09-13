@@ -22,9 +22,11 @@ void GameObject::Update(float InDeltaTime) {
 		case ObjectInputHandler::E:
 			mTransformComponent.UpdateRollAngle(InDeltaTime, ObjectInputHandler::POSITIVE);
 			break;
-		case ObjectInputHandler::LEFT:
+		case ObjectInputHandler::R:
+			mTransformComponent.UpdatePositionZ(InDeltaTime, ObjectInputHandler::POSITIVE);
 			break;
-		case ObjectInputHandler::RIGHT:
+		case ObjectInputHandler::F:
+			mTransformComponent.UpdatePositionZ(InDeltaTime, ObjectInputHandler::NEGATIVE);
 			break;
 		case ObjectInputHandler::UP:
 			break;

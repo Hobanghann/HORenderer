@@ -39,6 +39,8 @@ void CameraObject::Update(float InDeltaTime) {
 			break;
 		}
 	}
+	//update frustrum
+	mFrustrum->UpdateFOV(mFOV);
 }
 
 Matrix4x4 CameraObject::GetViewMatrixTowardObject(class GameObject* InGameObject) const {
@@ -67,7 +69,7 @@ Matrix4x4 CameraObject::GetViewMatrixTowardObject(class GameObject* InGameObject
 
 Matrix4x4 CameraObject::GetProjectionMatrix() const {
 	SDL_Log("load projection Matrix");
-	float foctalLength = tanf(mFOV * 0.5f);
+	float foctalLength = 1.f / tanf(mFOV * 0.5f);
 	float InvAspectRatio = 1.f / (static_cast<float>(mOwner->mWindowWidth) / static_cast<float>(mOwner->mWindowHeight));
 	float InvNearMinusFar = 1.f / (mNearPlane - mFarPlane);
 	SDL_Log("loading projection Matrix finished");

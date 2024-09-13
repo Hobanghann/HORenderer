@@ -32,6 +32,8 @@ namespace HO {
 		void mAddMesh(const std::string&, Mesh*);
 		void mRemoveMesh(const std::string&);
 
+		inline void mResetFrustrumState();
+
 	private:
 		inline void mUpdateEngineStatus();
 		inline int mGetRenderingMode() const;
@@ -56,6 +58,7 @@ namespace HO {
 		bool mbUseWireFrameMode = true;
 		bool mbUseBackfaceCulling = true;
 		bool mbUseDepthTesting = true;
+		bool mbUseFrustrumCulling = true;
 	};
 }
 
@@ -72,6 +75,7 @@ void HO::GameEngine::mUpdateEngineStatus() {
 				mbUseDepthTesting = !mbUseDepthTesting;
 				break;
 			case EngineInputHandler::F4:
+				mbUseFrustrumCulling = !mbUseFrustrumCulling;
 				break;
 			case EngineInputHandler::F5:
 				break;
@@ -95,7 +99,7 @@ void HO::GameEngine::mUpdateEngineStatus() {
 
 int HO::GameEngine::mGetRenderingMode() const{
 	int renderingMode = 0;
-	if(mbUseWireFrameMode){
+	if(!mbUseWireFrameMode){
 		renderingMode |= 0b0001;
 	}
 	if(mbUseBackfaceCulling){
@@ -105,4 +109,10 @@ int HO::GameEngine::mGetRenderingMode() const{
 		renderingMode |= 0b0100;
 	}
 	return renderingMode;
+}
+
+void HO::GameEngine::mResetFrustrumState(){
+	for(auto gameObject : mScene){
+		gameObject->SetInFrustrum();
+	}
 }

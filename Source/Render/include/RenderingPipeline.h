@@ -11,7 +11,7 @@ namespace HO {
 		};
 
 	public:
-		RenderingPipeline(class GameEngine* InGameEngine) :mOwner(InGameEngine) {}
+		RenderingPipeline(class GameEngine* InGameEngine);
 
 		inline Vertex VertexShader(const Vertex& InVertex, const Matrix4x4& InPVMMatrix);
 		inline Vertex PerspectiveDivide(const Vertex& InVertex) const;		
@@ -21,18 +21,22 @@ namespace HO {
 		void DrawLine(const Vector2& InStartPoint, const Vector2& InEndPoint) const;
 		void DrawTriangle(const std::vector<Vertex>& InVertexBuffer, Mesh::Triangle InTriangle, RenderingMode InMode) const;
 		
-		void FillTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle) const;
-		inline bool IsInTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel, float InDenominator) const;
-		inline Vector3 GetBarycentricCoordinate(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel, float InDenominator) const;
-
-		inline Vector3 GetBarycentricCoordinate(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel) const;		
-		inline bool IsInTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel) const;		
+		void FillTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, RenderingMode InMode) const;
 		
+		inline Vector3 GetBarycentricCoordinate(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel, float InDenominator) const;
+		inline bool IsInTriangle(const Vector3 &InbarycentricCoordinate) const;
+			
 		inline bool IsBackface(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector3 &InCameraForward) const;
 
 		void SetRenderingColor(const std::string) const;
+
+		class DepthBuffer *GetDepthBuffer() const; 
+		inline void ResetBuffer();
+
+		void FrustrumCullling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const;
 	private:
 		class GameEngine* mOwner;
+		class DepthBuffer *mDepthBuffer;
 	};
 }
 
@@ -57,36 +61,6 @@ HO::Vector2 HO::RenderingPipeline::DenormalizeNDC(const Vertex& InVertex, unsign
 
 HO::Vector2 HO::RenderingPipeline::Rasterize(const Vertex& InVertex, unsigned InWindowWidth, unsigned InWindowHeight) const {
 	return Vector2(InVertex.GetPixel().X + (InWindowWidth * 0.5f), -InVertex.GetPixel().Y + (InWindowHeight * 0.5f));
-}
-
-
-HO::Vector3 HO::RenderingPipeline::GetBarycentricCoordinate(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel) const {
-	Vector2 toP1 = InVertexBuffer[InTriangle.Index1].GetPixel() - InVertexBuffer[InTriangle.Index3].GetPixel(); //Vector 'a'
-	Vector2 toP2 = InVertexBuffer[InTriangle.Index2].GetPixel() - InVertexBuffer[InTriangle.Index3].GetPixel(); //Vector 'b'
-	Vector2 toInP = InPixel - InVertexBuffer[InTriangle.Index3].GetPixel(); //Vector 'c'
-
-	Vector2& a = toP1;
-	Vector2& b = toP2;
-	Vector2& c = toInP;
-	
-	float aDotb = a.Dot(b);
-	float aDota = a.Dot(a);
-	float bDotb = b.Dot(b);
-	float cDotb = c.Dot(b);
-	float cDota = c.Dot(a);
-
-	float denominator = (aDotb * aDotb) - (aDota * bDotb);
-
-	if (denominator == 0.f) {
-		SDL_Log("Degenerate triangle\n");
-		return Vector3::ZERO;
-	}
-
-	float InvDenominator = 1.f / denominator;
-	
-	float scalarOfP1 = ((cDotb * aDotb) - (cDota * bDotb)) * InvDenominator;
-	float scalarOfP2 = ((cDota * aDotb) - (cDotb * aDota)) * InvDenominator;
-	return Vector3(scalarOfP1, scalarOfP2, 1.f - scalarOfP1 - scalarOfP2);
 }
 
 
@@ -116,13 +90,8 @@ HO::Vector3 HO::RenderingPipeline::GetBarycentricCoordinate(const std::vector<Ve
 	return Vector3(scalarOfP1, scalarOfP2, 1.f - scalarOfP1 - scalarOfP2);
 }
 
-bool HO::RenderingPipeline::IsInTriangle(const std::vector<Vertex>& InVertexBuffer, const Mesh::Triangle& InTriangle, const Vector2& InPixel, float InDenominator) const {
-	if (InDenominator == 0.f) {
-		return false;
-	}
-	Vector3 barycentricCoordinate = GetBarycentricCoordinate(InVertexBuffer, InTriangle, InPixel, InDenominator);
-
-	Vector3& b = barycentricCoordinate;
+bool HO::RenderingPipeline::IsInTriangle(const Vector3 &InbarycentricCoordinate) const {
+	const Vector3& b = InbarycentricCoordinate;
 
 	if ((b.X > 0.f && b.X < 1.f) && (b.Y > 0.f && b.Y < 1.f) && (b.Z > 0.f && b.Z < 1.f)) {
 		return true;
@@ -143,4 +112,8 @@ bool HO::RenderingPipeline::IsBackface(const std::vector<Vertex>& InVertexBuffer
 		return true;
 	}
 	return false;
+}
+
+void HO::RenderingPipeline::ResetBuffer(){
+	mDepthBuffer->ResetBuffer();
 }

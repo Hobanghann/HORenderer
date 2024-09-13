@@ -10,6 +10,8 @@ namespace HO {
 			D,
 			Q,
 			E,
+			R,
+			F,
 			UP,
 			DOWN,
 			LEFT,
@@ -75,6 +77,12 @@ void HO::ObjectInputHandler::SetInputs(const Uint8* InKeyStatus) {
 	}	
 	if (InKeyStatus[SDL_SCANCODE_PAGEDOWN]) {
 		mKeyStatus.insert(PAGEDOWN);
+	}	
+	if (InKeyStatus[SDL_SCANCODE_R]) {
+		mKeyStatus.insert(R);
+	}	
+	if (InKeyStatus[SDL_SCANCODE_F]) {
+		mKeyStatus.insert(F);
 	}	
 }
 

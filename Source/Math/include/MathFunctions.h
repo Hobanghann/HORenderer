@@ -13,13 +13,13 @@ namespace HO {
 }
 
 bool HO::MathFunctions::IsAlmostEqual(const float InValue1, const float InValue2) {
-	constexpr float epsilon = std::numeric_limits<float>::epsilon();
-	return fabs(InValue1 - InValue2) < epsilon;
+	constexpr float epsilon = std::numeric_limits<float>::epsilon() + 0.000001f;
+	return fabs(InValue1 - InValue2) <= epsilon;
 }
 
 bool HO::MathFunctions::IsAlmostZero(const float InValue) {
 	constexpr float epsilon = std::numeric_limits<float>::epsilon();
-	return fabs(InValue) < epsilon;
+	return fabs(InValue) <= epsilon;
 }
 
 float HO::MathFunctions::Clamp(float &InOutValue, const float MinValue, const float MaxValue){

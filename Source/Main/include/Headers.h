@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <limits>
 #include <random>
+#include <memory>
 
 #include <vector>
 #include <array>

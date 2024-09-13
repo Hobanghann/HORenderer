@@ -3,7 +3,7 @@
 namespace HO {
 	class Vector3 {
 	public:
-		Vector3() {};
+		Vector3() = default;
 		Vector3(float InX, float InY, float InZ) :X(InX), Y(InY), Z(InZ) {};
 		Vector3(const Vector2 &InVector) : X(InVector.X), Y(InVector.Y), Z(1.f) {}
 		//multiplication with scalar

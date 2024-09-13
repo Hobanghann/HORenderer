@@ -26,15 +26,6 @@ endif()
 
 add_subdirectory(Source/Main)
 
-add_executable(HORenderer Source/Main/src/main.cpp)
-
-target_include_directories(HORenderer PRIVATE Source/Main/include)
-target_link_libraries(HORenderer headers)
-target_link_libraries(HORenderer math)
-target_link_libraries(HORenderer resource)
-target_link_libraries(HORenderer render)
-target_link_libraries(HORenderer engine)
-
 
 
 

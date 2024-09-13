@@ -1,5 +1,7 @@
 #include "../../Main/include/Headers.h"
 
+//#define DEBUG
+
 using namespace HO;
 
 bool GameEngine::Initialize()
@@ -41,10 +43,13 @@ bool GameEngine::Initialize()
 
 void GameEngine::RunLoop()
 {	
+
+#ifdef DEBUG
 	SDL_Log("enter main loop");
+#endif
+
 	while (mbIsRunning)
 	{
-		mFrameCount++;
 		mProcessInput();
 		mUpdate();
 		mRender();
@@ -60,26 +65,42 @@ void GameEngine::Quit()
 
 void GameEngine::mLoadResources()
 {	
+#ifdef DEBUG
 	SDL_Log("start load resources");
+#endif
+
 	Mesh *Box = new Mesh(Mesh::BOX);
+
 	mAddMesh("BOX_MESH", Box);
+
 }
 
 void GameEngine::mLoadScene()
 {	
+#ifdef DEBUG
 	SDL_Log("start load main object");
+#endif
+
 	GameObject *newObject = new GameObject("MainBOX", mGetMesh("BOX_MESH"));
 	newObject->SetMainObject();
 	auto &transform = newObject->GetTransform();
-	transform.SetPosition(Vector3(0.f, 0.f, 500.f));
+	transform.SetPosition(Vector3(0.f, 0.f, -500.f));
 	transform.SetScale(100.f);
+
+#ifdef DEBUG
 	SDL_Log("finish load main object");
+#endif
+
 	mAddGameObject(newObject);
 
 	std::mt19937 randomEngine(0);
-	std::uniform_real_distribution<float> distributionZ(500.f, 1000.f);
-	std::uniform_real_distribution<float> distributionXY(-500.f, 500.f);
+	std::uniform_real_distribution<float> distributionZ(-1000.f, -500.f);
+	std::uniform_real_distribution<float> distributionXY(-2000.f, 2000.f);
+
+#ifdef DEBUG
 	SDL_Log("start load subobject");
+#endif
+
 	for (int i = 1; i <= 10; i++)
 	{
 		char objectName[10];
@@ -90,16 +111,22 @@ void GameEngine::mLoadScene()
 		transform.SetScale(100.f);
 		mAddGameObject(newObject);
 	}
+
+#ifdef DEBUG
 	SDL_Log("finish load subobject");
+#endif
 
 	Transform &CameraTransform = mMainCamera.GetTransform();
-	CameraTransform.SetPosition(Vector3(0.f, 30.f, -500.f));
+	CameraTransform.SetPosition(Vector3(0.f, 30.f, 500.f));
 	CameraTransform.SetYawAngle(PI);
 }
 
 void GameEngine::mProcessInput()
 {	
+#ifdef DEBUG
 	SDL_Log("start process input");
+#endif
+
 	SDL_Event e;
 	while (SDL_PollEvent(&e))
 	{
@@ -122,20 +149,25 @@ void GameEngine::mProcessInput()
 	mEngineInputHandler.SetInputs(keyboard);
 	boxInputHandler.SetInputs(keyboard);
 	cameraInputHandler.SetInputs(keyboard);
+
+#ifdef DEBUG
 	SDL_Log("finish process input");
+#endif
 }
 
 void GameEngine::mUpdate()
-{	
+{
+#ifdef DEBUG
 	SDL_Log("start update");
-	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTickCount + 16))
-		;
+#endif
+
+	while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTickCount + 16));
 
 	float deltaTime = (SDL_GetTicks() - mTickCount) / 1000.f;
-	/*if (deltaTime > 0.5f)
+	if (deltaTime > 0.5f)
 	{
 		deltaTime = 0.0016f;
-	}*/
+	}
 
 	mTickCount = SDL_GetTicks();
 
@@ -144,28 +176,50 @@ void GameEngine::mUpdate()
 	GameObject *box = mGetGameObject("MainBOX");
 	box->Update(deltaTime);
 	mMainCamera.Update(deltaTime);
+
+#ifdef DEBUG
 	SDL_Log("finish update");
+#endif
 }
 
 void GameEngine::mRender()
 {
+	
 	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255);
 	SDL_RenderClear(mRenderer);
 
+	if(mbUseDepthTesting){
+		mRenderingPipeline.ResetBuffer();
+	}
+
+	Matrix4x4 viewMatrix = mMainCamera.GetViewMatrix();
+
+	if(mbUseFrustrumCulling){
+		Matrix4x4 viewMatrix = mMainCamera.GetViewMatrix();
+		for(auto gameObject : mScene){
+			mRenderingPipeline.FrustrumCullling(gameObject, viewMatrix);
+		}
+	}
+
 	for (GameObject *box : mScene)
-	{
+	{	SDL_Log("check");
 		std::vector<Vertex> vertexBuffer = box->GetMesh()->GetVertexBuffer();
-
+		
+#ifdef DEBUG
 		SDL_Log("start load matrix");
-		//Matrix4x4 PVMMatrix = mMainCamera.GetProjectionMatrix() * mMainCamera.GetViewMatrixTowardObject(mGetGameObject("MainBOX")) * box->GetTransform().GetModelingMatrix();
-		Matrix4x4 PVMMatrix = mMainCamera.GetProjectionMatrix() * mMainCamera.GetViewMatrix() * box->GetTransform().GetModelingMatrix();
-		//Matrix4x4 PVMMatrix = mMainCamera.GetProjectionMatrix() * mMainCamera.GetViewMatrixFromLocalAxis() * box->GetTransform().GetModelingMatrix();
-		SDL_Log("finish load matrix");
+#endif
 
+		Matrix4x4 PVMMatrix = mMainCamera.GetProjectionMatrix() * viewMatrix * box->GetTransform().GetModelingMatrix();
+
+#ifdef DEBUG
+		SDL_Log("finish load matrix");
 		SDL_Log("start transform vertices");
+#endif
+		
+		
 		for (Vertex &vertex : vertexBuffer)
 		{
-			// transform point from local space to clip space
+			//transform point from local space to clip space
 			vertex = mRenderingPipeline.VertexShader(vertex, PVMMatrix);
 			// perspective divide
 			vertex = mRenderingPipeline.PerspectiveDivide(vertex);
@@ -174,13 +228,20 @@ void GameEngine::mRender()
 
 			vertex.SetPixel(mRenderingPipeline.Rasterize(vertex, mWindowWidth, mWindowHeight));
 		}
+
+#ifdef DEBUG
 		SDL_Log("finish transform vertices");
+#endif
 
 		std::list<Mesh::Triangle> indexBuffer = box->GetMesh()->GetIndexBuffer();
 
 		if (mbUseBackfaceCulling)
 		{
+
+#ifdef DEBUG
 			SDL_Log("start backface culling");
+#endif
+
 			for (auto itr = indexBuffer.begin(); itr != indexBuffer.end();)
 			{
 				if (mRenderingPipeline.IsBackface(vertexBuffer, *itr, Vector3::UnitZ))
@@ -192,9 +253,14 @@ void GameEngine::mRender()
 					itr++;
 				}
 			}
+
+#ifdef DEBUG
 			SDL_Log("finish backface culling");
+#endif
+
 		}
 
+		//set color
 		if (box->IsMainObject())
 		{
 			mRenderingPipeline.SetRenderingColor("PURPLE");
@@ -204,15 +270,44 @@ void GameEngine::mRender()
 			mRenderingPipeline.SetRenderingColor("BLUE");
 		}
 
+		//draw in color buffer
 		for (Mesh::Triangle &triangle : indexBuffer)
 		{
+
+#ifdef DEBUG
 			SDL_Log("start drawing triangle");
+#endif
+
 			mRenderingPipeline.DrawTriangle(vertexBuffer, triangle, static_cast<RenderingPipeline::RenderingMode>(mGetRenderingMode()));
+
+#ifdef DEBUG
 			SDL_Log("finish drawing triangle");
+#endif
 		}
 	}
 
+#ifdef DEBUG
+	SDL_Log("start reset frustrum state");
+#endif
+
+	if(mbUseFrustrumCulling){
+		mResetFrustrumState();	
+	}
+
+#ifdef DEBUG
+		SDL_Log("finish resetting frustrum state");
+#endif
+
+	//swap color buffer
+#ifdef DEBUG
+	SDL_Log("swap buffer");
+#endif
+
 	SDL_RenderPresent(mRenderer);
+
+#ifdef DEBUG
+	SDL_Log("%s", SDL_GetError());
+#endif
 }
 
 GameObject *GameEngine::mGetGameObject(const std::string &InString) const{

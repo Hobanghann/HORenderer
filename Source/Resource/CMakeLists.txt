@@ -2,15 +2,19 @@ cmake_minimum_required(VERSION 3.20)
 
 project(ResourceModule)
 
+file(GLOB SOURCES "src/*.cpp")
+file(GLOB HEADERS "include/*.h")
+
 add_library(
-    resource
+    ResourceModule
     STATIC
-    src/Mesh.cpp
-    src/Transform.cpp
-    src/ObjectInputHandler.cpp
-    src/GameObject.cpp
+    ${SOURCES}
+    ${HEADERS}
 )
 
-target_include_directories(resource PUBLIC ../Main/include)
-target_link_libraries(resource PUBLIC math)
-target_link_directories(resource PUBLIC ../Math/bin)
+target_include_directories(ResourceModule PUBLIC ../Main/include)
+target_link_libraries(ResourceModule PUBLIC MathModule)
+target_link_directories(ResourceModule PUBLIC ../Math/bin)
+
+source_group("Source" REGULAR_EXPRESSION "src/.*\\.cpp")
+source_group("Include" REGULAR_EXPRESSION "include/.*\\.h")
