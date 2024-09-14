@@ -46,7 +46,7 @@ void CameraObject::Update(float InDeltaTime) {
 		}
 	}
 	//update frustrum
-	mFrustrum->UpdateFOV(mFOV);
+	mFrustrum->UpdatePlane(GetProjectionMatrix());
 }
 
 Matrix4x4 CameraObject::GetViewMatrixTowardObject(class GameObject* InGameObject) const {

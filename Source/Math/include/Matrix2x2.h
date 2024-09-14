@@ -17,6 +17,13 @@ namespace HO {
 		inline Vector2 operator*(const Vector2& InVector) const;
 		//Transpose
 		inline Matrix2x2 Transpose() const;
+
+		inline Vector2 GetCol1() const;
+		inline Vector2 GetCol2() const;
+
+		inline Vector2 GetRow1() const;
+		inline Vector2 GetRow2() const;
+
 	private:
 		Vector2 mCol1;
 		Vector2 mCol2;
@@ -72,4 +79,18 @@ HO::Matrix2x2 HO::Matrix2x2::Transpose() const {
 	Vector2 NewCol1(mCol1.X, mCol2.X);
 	Vector2 NewCol2(mCol1.Y, mCol2.Y);
 	return Matrix2x2(NewCol1, NewCol2);
+}
+
+HO::Vector2 HO::Matrix2x2::GetCol1() const {
+	return mCol1;
+}
+HO::Vector2 HO::Matrix2x2::GetCol2() const {
+	return mCol2;
+}
+
+HO::Vector2 HO::Matrix2x2::GetRow1() const {
+	return Vector2(mCol1.X, mCol2.X);
+}
+HO::Vector2 HO::Matrix2x2::GetRow2() const {
+	return Vector2(mCol1.Y, mCol2.Y);
 }

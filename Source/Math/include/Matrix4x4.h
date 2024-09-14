@@ -28,6 +28,18 @@ namespace HO {
 		inline Matrix4x4 Transpose() const;
 
 		inline Matrix3x3 ToMatrix3x3() const;
+
+
+		inline Vector4 GetCol1() const;
+		inline Vector4 GetCol2() const;
+		inline Vector4 GetCol3() const;
+		inline Vector4 GetCol4() const;
+
+		inline Vector4 GetRow1() const;
+		inline Vector4 GetRow2() const;
+		inline Vector4 GetRow3() const;
+		inline Vector4 GetRow4() const;
+
 	private:
 		Vector4 mCol1;
 		Vector4 mCol2;
@@ -125,4 +137,30 @@ HO::Matrix3x3 HO::Matrix4x4::ToMatrix3x3() const {
 		Vector3(mCol2.X, mCol2.Y, mCol2.Z),
 		Vector3(mCol3.X, mCol3.Y, mCol3.Z)
 	);
+}
+
+HO::Vector4 HO::Matrix4x4::GetCol1() const {
+	return mCol1;
+}
+HO::Vector4 HO::Matrix4x4::GetCol2() const {
+	return mCol2;
+}
+HO::Vector4 HO::Matrix4x4::GetCol3() const {
+	return mCol3;
+}
+HO::Vector4 HO::Matrix4x4::GetCol4() const {
+	return mCol4;
+}
+
+HO::Vector4 HO::Matrix4x4::GetRow1() const {
+	return Vector4(mCol1.X, mCol2.X, mCol3.X, mCol4.X);
+}
+HO::Vector4 HO::Matrix4x4::GetRow2() const {
+	return Vector4(mCol1.Y, mCol2.Y, mCol3.Y, mCol4.Y);
+}
+HO::Vector4 HO::Matrix4x4::GetRow3() const {
+	return Vector4(mCol1.Z, mCol2.Z, mCol3.Z, mCol4.Z);
+}
+HO::Vector4 HO::Matrix4x4::GetRow4() const {
+	return Vector4(mCol1.W, mCol2.W, mCol3.W, mCol4.W);
 }

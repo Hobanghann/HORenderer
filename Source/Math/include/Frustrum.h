@@ -15,7 +15,11 @@ namespace HO{
         public:
             inline Frustrum(float InFOV, int InWindowWidth, int InWindowHeight, float InNearDistance, float InFarDistance);
 
-            inline void UpdateFOV(float InFOV);
+            inline Frustrum(Matrix4x4 InProjectionMatrix);
+
+            inline void UpdatePlane(float InFOV);
+
+            inline void UpdatePlane(Matrix4x4 InprojectionPlane);
 
             inline void UpdateNearPlane(float InNearDistance);
 
@@ -46,37 +50,59 @@ mAspectRatio(static_cast<float>(InWindowWidth) / static_cast<float>(InWindowHeig
     float upDownCos = cosf(mFOV * 0.5f * mAspectRatio), upDownSin = sinf(mFOV * 0.5f * mAspectRatio);
     float leftRightCos = cosf(mFOV * 0.5f), leftRightSin = sinf(mFOV * 0.5f);
     //up plane
-    mPlanes.push_back(Plane(Vector3(0.f, upDownCos, upDownSin), Vector3::ZERO, false));
+    mPlanes.push_back(Plane(Vector3(0.f, upDownCos, upDownSin), Vector3::ZERO));
     //down plane
-    mPlanes.push_back(Plane(Vector3(0.f, -upDownCos, upDownSin), Vector3::ZERO, false));
+    mPlanes.push_back(Plane(Vector3(0.f, -upDownCos, upDownSin), Vector3::ZERO));
     //left plane
-    mPlanes.push_back(Plane(Vector3(-leftRightCos, 0.f, leftRightSin), Vector3::ZERO, false));
+    mPlanes.push_back(Plane(Vector3(-leftRightCos, 0.f, leftRightSin), Vector3::ZERO));
     //right plane
-    mPlanes.push_back(Plane(Vector3(leftRightCos, 0.f, leftRightSin), Vector3::ZERO, false));
+    mPlanes.push_back(Plane(Vector3(leftRightCos, 0.f, leftRightSin), Vector3::ZERO));
     //near plane
-    mPlanes.push_back(Plane(Vector3::UnitZ, Vector3(0.f, 0.f, -mNearDistance), true));
+    mPlanes.push_back(Plane(Vector3::UnitZ, Vector3(0.f, 0.f, -mNearDistance)));
     //far plane
-    mPlanes.push_back(Plane(-Vector3::UnitZ, Vector3(0.f, 0.f, -mFarDistance), false));
+    mPlanes.push_back(Plane(-Vector3::UnitZ, Vector3(0.f, 0.f, -mFarDistance)));
 }
 
-void HO::Frustrum::UpdateFOV(float InFOV){
+HO::Frustrum::Frustrum(Matrix4x4 InProjectionMatrix) {
+    //up plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2()));
+    //down plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2()));    
+    //left plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1()));
+    //right plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow1()));    
+    //near plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow3()));
+    //far plane
+    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow3()));
+}
+
+void HO::Frustrum::UpdatePlane(float InFOV){
     mFOV = InFOV;
     float upDownCos = cosf(mFOV * 0.5f * mAspectRatio), upDownSin = sinf(mFOV * 0.5f * mAspectRatio);
     float leftRightCos = cosf(mFOV * 0.5f), leftRightSin = sinf(mFOV * 0.5f);
-    mPlanes[eUP] = Plane(Vector3(0.f, upDownCos, upDownSin), Vector3::ZERO, false);
-    mPlanes[eDOWN] = Plane(Vector3(0.f, -upDownCos, upDownSin), Vector3::ZERO, false);
-    mPlanes[eLEFT] = Plane(Vector3(-leftRightCos, 0.f, leftRightSin), Vector3::ZERO, false);
-    mPlanes[eRIGHT] = Plane(Vector3(leftRightCos, 0.f, leftRightSin), Vector3::ZERO, false);
+    mPlanes[eUP] = Plane(Vector3(0.f, upDownCos, upDownSin), Vector3::ZERO);
+    mPlanes[eDOWN] = Plane(Vector3(0.f, -upDownCos, upDownSin), Vector3::ZERO);
+    mPlanes[eLEFT] = Plane(Vector3(-leftRightCos, 0.f, leftRightSin), Vector3::ZERO);
+    mPlanes[eRIGHT] = Plane(Vector3(leftRightCos, 0.f, leftRightSin), Vector3::ZERO);
+}
+
+void HO::Frustrum::UpdatePlane(Matrix4x4 InProjectionMatrix) {
+    mPlanes[eUP] = Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2());
+    mPlanes[eDOWN] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2());
+    mPlanes[eLEFT] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1());
+    mPlanes[eRIGHT] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow3());
 }
 
 void HO::Frustrum::UpdateNearPlane(float InNearDistance){
     mNearDistance = InNearDistance;
-    mPlanes[eNEAR] = Plane(Vector3::UnitZ, Vector3(0.f, 0.f, -mNearDistance), true);
+    mPlanes[eNEAR] = Plane(Vector3::UnitZ, Vector3(0.f, 0.f, -mNearDistance));
 }
 
 void HO::Frustrum::UpdateFarPlane(float InFarDistance){
     mFarDistance = InFarDistance;
-    mPlanes[eFAR] = Plane(-Vector3::UnitZ, Vector3(0.f, 0.f, -mFarDistance), false);
+    mPlanes[eFAR] = Plane(-Vector3::UnitZ, Vector3(0.f, 0.f, -mFarDistance));
 }
 
 bool HO::Frustrum::IsInFrustrum(Vector3 InPoint) const{

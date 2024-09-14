@@ -27,7 +27,16 @@ namespace HO {
 		inline Vector3 operator*(const Vector3& InVector) const;
 		inline Matrix3x3 Transpose() const;
 
+		inline Vector3 GetCol1() const;
+		inline Vector3 GetCol2() const;
+		inline Vector3 GetCol3() const;
+
+		inline Vector3 GetRow1() const;
+		inline Vector3 GetRow2() const;
+		inline Vector3 GetRow3() const;
+
 		class Matrix4x4 MakeAffineMatrix(const Vector4& InPosition) const;
+
 	private:
 		Vector3 mCol1;
 		Vector3 mCol2;
@@ -101,4 +110,22 @@ HO::Matrix3x3 HO::Matrix3x3::Transpose() const {
 	return Matrix3x3(NewCol1, NewCol2, NewCol3);
 }
 
+HO::Vector3 HO::Matrix3x3::GetCol1() const {
+	return mCol1;
+}
+HO::Vector3 HO::Matrix3x3::GetCol2() const {
+	return mCol2;
+}
+HO::Vector3 HO::Matrix3x3::GetCol3() const {
+	return mCol3;
+}
 
+HO::Vector3 HO::Matrix3x3::GetRow1() const {
+	return Vector3(mCol1.X, mCol2.X, mCol3.X);
+}
+HO::Vector3 HO::Matrix3x3::GetRow2() const {
+	return Vector3(mCol1.Y, mCol2.Y, mCol3.Y);
+}
+HO::Vector3 HO::Matrix3x3::GetRow3() const {
+	return Vector3(mCol1.Z, mCol2.Z, mCol3.Z);
+}
