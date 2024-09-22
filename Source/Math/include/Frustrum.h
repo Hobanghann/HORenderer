@@ -28,10 +28,11 @@ namespace HO{
             //view space에서의 point를 검사
             inline bool IsInFrustrum(Vector3 InPoint) const;
 
+            bool IsInFrustrum(const class SphereBoundingVolume &) const;
         private:
             float mFOV = 0.f;
-            float mNearDistance = 0.f;
-            float mFarDistance = 0.f;
+            float mNearDistance = 5.5f;
+            float mFarDistance = 5000.f;
             int mWindowWidth = 0;
             int mWindowHeight = 0;
             float mAspectRatio = 0.f;
@@ -61,21 +62,27 @@ mAspectRatio(static_cast<float>(InWindowWidth) / static_cast<float>(InWindowHeig
     mPlanes.push_back(Plane(Vector3::UnitZ, Vector3(0.f, 0.f, -mNearDistance)));
     //far plane
     mPlanes.push_back(Plane(-Vector3::UnitZ, Vector3(0.f, 0.f, -mFarDistance)));
+    SDL_Log("left plane projection matrix frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eLEFT].GetNormalVector().X, mPlanes[eLEFT].GetNormalVector().Y, mPlanes[eLEFT].GetNormalVector().Z, mPlanes[eLEFT].GetDValue());
+    SDL_Log("near plane fov frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eNEAR].GetNormalVector().X, mPlanes[eNEAR].GetNormalVector().Y, mPlanes[eNEAR].GetNormalVector().Z, mPlanes[eNEAR].GetDValue());
+    SDL_Log("far plane fov frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eFAR].GetNormalVector().X, mPlanes[eFAR].GetNormalVector().Y, mPlanes[eFAR].GetNormalVector().Z, mPlanes[eFAR].GetDValue());
 }
 
 HO::Frustrum::Frustrum(Matrix4x4 InProjectionMatrix) {
     //up plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2()));
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2())));
     //down plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2()));    
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2())));    
     //left plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1()));
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1())));
     //right plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow1()));    
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow1())));  
     //near plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow3()));
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow3())));
     //far plane
-    mPlanes.push_back(Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow3()));
+    mPlanes.push_back(Plane(-(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow3())));
+    SDL_Log("left plane projection matrix frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eLEFT].GetNormalVector().X, mPlanes[eLEFT].GetNormalVector().Y, mPlanes[eLEFT].GetNormalVector().Z, mPlanes[eLEFT].GetDValue());
+    SDL_Log("near plane projection matrix frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eNEAR].GetNormalVector().X, mPlanes[eNEAR].GetNormalVector().Y, mPlanes[eNEAR].GetNormalVector().Z, mPlanes[eNEAR].GetDValue());
+    SDL_Log("far plane projection matrix frustrum\nNormal vector : %f, %f, %f, dvalue : %f", mPlanes[eFAR].GetNormalVector().X, mPlanes[eFAR].GetNormalVector().Y, mPlanes[eFAR].GetNormalVector().Z, mPlanes[eFAR].GetDValue());
 }
 
 void HO::Frustrum::UpdatePlane(float InFOV){
@@ -89,10 +96,10 @@ void HO::Frustrum::UpdatePlane(float InFOV){
 }
 
 void HO::Frustrum::UpdatePlane(Matrix4x4 InProjectionMatrix) {
-    mPlanes[eUP] = Plane(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2());
-    mPlanes[eDOWN] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2());
-    mPlanes[eLEFT] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1());
-    mPlanes[eRIGHT] = Plane(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow3());
+    mPlanes[eUP] = Plane(-(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow2()));
+    mPlanes[eDOWN] = Plane(-(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow2()));
+    mPlanes[eLEFT] = Plane(-(InProjectionMatrix.GetRow4() + InProjectionMatrix.GetRow1()));
+    mPlanes[eRIGHT] = Plane(-(InProjectionMatrix.GetRow4() - InProjectionMatrix.GetRow1()));
 }
 
 void HO::Frustrum::UpdateNearPlane(float InNearDistance){

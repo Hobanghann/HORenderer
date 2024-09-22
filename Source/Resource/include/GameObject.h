@@ -3,11 +3,15 @@
 namespace HO {
 	class GameObject : public Object{
 	public:
-		GameObject(std::string InName, Mesh* InMesh) : Object(this), mName(InName), mMesh(InMesh){}
+		GameObject(std::string InName, const Mesh* InMesh): 
+		Object(this), 
+		mName(InName), 
+		mMesh(InMesh)
+		{}
 		void Update(float InDeltaTime) override;
 
 		inline std::string GetName() const;
-		inline Mesh* GetMesh() const;
+		inline const Mesh* GetMesh() const;
 		inline Vector3 GetPosition() const;
 		inline bool IsMainObject() const;
 
@@ -24,7 +28,7 @@ namespace HO {
 
 	private:
 		std::string mName;
-		Mesh* mMesh;
+		const Mesh* mMesh;
 
 		bool mbIsMainObject = false;
 		bool mbIsInFrustrum = true;
@@ -32,7 +36,7 @@ namespace HO {
 }
 
 
-HO::Mesh* HO::GameObject::GetMesh() const {
+const HO::Mesh* HO::GameObject::GetMesh() const {
 	return mMesh;
 }
 

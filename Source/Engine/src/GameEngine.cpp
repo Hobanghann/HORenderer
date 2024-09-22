@@ -76,10 +76,10 @@ void GameEngine::mLoadResources()
 	SDL_Log("start load resources");
 #endif
 
-	Mesh *Box = new Mesh(Mesh::BOX);
+	const Mesh *Box = new Mesh(Mesh::BOX);
 
 	mAddMesh("BOX_MESH", Box);
-
+	SDL_Log("Center : %f %f %f, Radious : %f", Box->GetSphereBoundingVolume()->GetCenter().X, Box->GetSphereBoundingVolume()->GetCenter().Y, Box->GetSphereBoundingVolume()->GetCenter().Z, Box->GetSphereBoundingVolume()->GetRadious());
 }
 
 void GameEngine::mLoadScene()
@@ -91,7 +91,7 @@ void GameEngine::mLoadScene()
 	GameObject *newObject = new GameObject("MainBOX", mGetMesh("BOX_MESH"));
 	newObject->SetMainObject();
 	auto &transform = newObject->GetTransform();
-	transform.SetPosition(Vector3(0.f, 0.f, -500.f));
+	transform.SetPosition(Vector3(0.f, 0.f, -1000.f));
 	transform.SetScale(100.f);
 
 #ifdef DEBUG
@@ -101,7 +101,7 @@ void GameEngine::mLoadScene()
 	mAddGameObject(newObject);
 
 	std::mt19937 randomEngine(0);
-	std::uniform_real_distribution<float> distributionZ(-1000.f, 0.f);
+	std::uniform_real_distribution<float> distributionZ(-3000.f, -1000.f);
 	std::uniform_real_distribution<float> distributionXY(-3000.f, 3000.f);
 
 #ifdef DEBUG
@@ -200,38 +200,30 @@ void GameEngine::mRender()
 		mRenderingPipeline.ResetBuffer();
 	}
 
+	Matrix4x4 projectionMatrix = mMainCamera.GetProjectionMatrix();
 	Matrix4x4 viewMatrix = mMainCamera.GetViewMatrix();
 
-	if(mbUseFrustrumCulling){
-		Matrix4x4 viewMatrix = mMainCamera.GetViewMatrix();
-		for(auto gameObject : mScene){
-			mRenderingPipeline.FrustrumCulling(gameObject, viewMatrix);
-		}
-	}
+	for (GameObject *box : mScene) {
 
-	for (GameObject *box : mScene)
-	{	
+		Matrix4x4 vmMatrix = viewMatrix * box->GetTransform().GetModelingMatrix();
 
-		if (mbUseBackfaceCulling) {
-			if (!box->IsInFrustrum()) {
+		if(mbUseFrustrumCulling){
+			mRenderingPipeline.BoundingVolumeFrustrumCulling(box, vmMatrix);
+			if(!box->IsInFrustrum()){
 				numCulled++;
 				continue;
 			}
 		}
-
-		std::vector<Vertex> vertexBuffer = box->GetMesh()->GetVertexBuffer();
 		
-#ifdef DEBUG
-		SDL_Log("start load matrix");
-#endif
+		std::vector<Vertex> vertexBuffer = box->GetMesh()->GetVertexBuffer();
 
-		Matrix4x4 PVMMatrix = mMainCamera.GetProjectionMatrix() * viewMatrix * box->GetTransform().GetModelingMatrix();
+		Matrix4x4 PVMMatrix = projectionMatrix * vmMatrix;
 
 #ifdef DEBUG
-		SDL_Log("finish load matrix");
 		SDL_Log("start transform vertices");
 #endif
 		
+
 		
 		for (Vertex &vertex : vertexBuffer)
 		{
@@ -352,7 +344,7 @@ void GameEngine::mRemoveGameObject(const std::string &InString){
 	return;
 }
 
-Mesh *GameEngine::mGetMesh(const std::string &InName) const
+const Mesh *GameEngine::mGetMesh(const std::string &InName) const
 {
 	auto foundObject = mMeshes.find(InName);
 	if (foundObject == mMeshes.end())
@@ -362,7 +354,7 @@ Mesh *GameEngine::mGetMesh(const std::string &InName) const
 	return foundObject->second;
 }
 
-void GameEngine::mAddMesh(const std::string &InName, Mesh *InMesh)
+void GameEngine::mAddMesh(const std::string &InName, const Mesh *InMesh)
 {
 	mMeshes.insert({InName, InMesh});
 }

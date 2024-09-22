@@ -2,6 +2,20 @@
 
 using namespace HO;
 
+Mesh::Mesh(const Mesh& InMesh) :
+	mName(InMesh.mName),
+	mVertexBuffer(InMesh.mVertexBuffer),
+	mIndexBuffer(InMesh.mIndexBuffer),
+	mSphereBoundingVolume(new SphereBoundingVolume(this)) {}
+
+Mesh::Mesh(const std::string InName, const std::vector<Vertex> InVertices, const std::list<Triangle> InIndices) :
+	mName(InName),
+	mVertexBuffer(InVertices),
+	mIndexBuffer(InIndices),
+	mSphereBoundingVolume(new SphereBoundingVolume(this))
+{}
+
+
 const Mesh Mesh::BOX(
 	"BOX_MESH",
 	std::vector<Vertex>{
@@ -15,17 +29,21 @@ const Mesh Mesh::BOX(
 		Vector3(-1.f, -1.f, 1.f)
 },
 std::list<Mesh::Triangle>{
-	{0, 1, 2, false},
-	{ 2, 3, 0, false },
-	{ 0, 4, 5, false },
-	{ 5, 1, 0, false },
-	{ 1, 5, 6, false },
-	{ 6, 2, 1, false },
-	{ 2, 6, 7, false },
-	{ 7, 3, 2, false },
-	{ 3, 7, 4, false },
-	{ 4, 0, 3, false },
-	{ 4, 6, 5, false },
-	{ 6, 4, 7, false }
+	{0, 1, 2},
+	{ 2, 3, 0},
+	{ 0, 4, 5},
+	{ 5, 1, 0},
+	{ 1, 5, 6},
+	{ 6, 2, 1},
+	{ 2, 6, 7},
+	{ 7, 3, 2},
+	{ 3, 7, 4},
+	{ 4, 0, 3},
+	{ 4, 6, 5},
+	{ 6, 4, 7}
 }
 );
+
+const SphereBoundingVolume *Mesh::GetSphereBoundingVolume() const {
+	return mSphereBoundingVolume;
+}

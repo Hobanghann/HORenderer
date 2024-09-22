@@ -4,12 +4,13 @@ using namespace HO;
 
 CameraObject::CameraObject(class GameEngine* InGameEngine) :
 	Object(this),
-	mOwner(InGameEngine) {
-	mFrustrum = new Frustrum(mFOV, mOwner->mWindowWidth, mOwner->mWindowHeight, mNearPlane, mFarPlane);
+	mOwner(InGameEngine)
+{
+	mFrustrum = new Frustrum(GetProjectionMatrix());
 }
 
 void CameraObject::Update(float InDeltaTime) {
-	for (const auto &key : mInputHandler.GetInputs()) {
+	for (const auto& key : mInputHandler.GetInputs()) {
 		switch (key) {
 		case ObjectInputHandler::W:
 			break;
@@ -82,7 +83,7 @@ Matrix4x4 CameraObject::GetProjectionMatrix() const {
 	return Matrix4x4(
 		Vector4(foctalLength * InvAspectRatio, 0.f, 0.f, 0.f),
 		Vector4(0.f, foctalLength, 0.f, 0.f),
-		Vector4(0.f, 0.f, (mNearPlane + mFarPlane) / InvNearMinusFar, -1.f),
+		Vector4(0.f, 0.f, (mNearPlane + mFarPlane) * InvNearMinusFar, -1.f),
 		Vector4(0.f, 0.f, (2.f * mNearPlane * mFarPlane) * InvNearMinusFar, 0.f)
 	);
 }

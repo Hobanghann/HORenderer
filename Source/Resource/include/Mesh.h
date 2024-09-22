@@ -8,17 +8,17 @@ namespace HO {
 			size_t Index1;
 			size_t Index2;
 			size_t Index3;
-			bool IsBackface;
 		};
 
 	public:
 		Mesh() = default;
-		Mesh(const Mesh &InMesh): mName(InMesh.mName), mVertexBuffer(InMesh.mVertexBuffer), mIndexBuffer(InMesh.mIndexBuffer) {}
-		Mesh(const std::string InName, const std::vector<Vertex> InVertices, const std::list<Triangle> InIndices) :mName(InName), mVertexBuffer(InVertices), mIndexBuffer(InIndices) {}
+		Mesh(const Mesh& InMesh);
+		Mesh(const std::string InName, const std::vector<Vertex> InVertices, const std::list<Triangle> InIndices);
 
 		inline std::string GetName() const;
 		inline std::vector<Vertex> GetVertexBuffer() const;
 		inline const std::list<Triangle> GetIndexBuffer() const;
+		const SphereBoundingVolume *GetSphereBoundingVolume() const;
 
 	public:
 		static const Mesh BOX;
@@ -27,6 +27,8 @@ namespace HO {
 		const std::string mName;
 		std::vector<Vertex> mVertexBuffer;
 		const std::list<Triangle> mIndexBuffer;
+
+		const SphereBoundingVolume *mSphereBoundingVolume;
 	};
 }
 

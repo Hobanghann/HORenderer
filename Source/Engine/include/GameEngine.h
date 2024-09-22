@@ -28,8 +28,8 @@ namespace HO {
 		void mAddGameObject(GameObject*);
 		void mRemoveGameObject(const std::string&);
 
-		Mesh* mGetMesh(const std::string&) const;
-		void mAddMesh(const std::string&, Mesh*);
+		const Mesh* mGetMesh(const std::string&) const;
+		void mAddMesh(const std::string&, const Mesh*);
 		void mRemoveMesh(const std::string&);
 
 		inline void mResetFrustrumState();
@@ -48,7 +48,7 @@ namespace HO {
 		Uint32 mFrameCount = 0;
 
 		std::vector<GameObject*> mScene;
-		std::unordered_map<std::string, Mesh*> mMeshes;
+		std::unordered_map<std::string, const Mesh*> mMeshes;
 
 		CameraObject mMainCamera;
 		RenderingPipeline mRenderingPipeline;

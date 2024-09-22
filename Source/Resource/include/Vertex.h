@@ -19,8 +19,7 @@ namespace HO {
 
 		inline Vector2 GetUV() const {
 			return mUVCoordinate;
-		}
-		
+		}		
 		
 		inline void SetPoint(const Vector4 &InPoint);
 		inline Vector4 GetPoint() const;		
