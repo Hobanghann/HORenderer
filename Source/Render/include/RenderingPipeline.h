@@ -34,7 +34,8 @@ namespace HO {
 		inline void ResetBuffer();
 
 		void FrustrumCulling(class GameObject *InGameObject, Matrix4x4 InViewMatrix) const;
-		void BoundingVolumeFrustrumCulling(class GameObject *InSphere, Matrix4x4 InVMMatrix) const;
+		void SphereBoundingVolumeFrustrumCulling(class GameObject *InGameObject, Matrix4x4 InVMMatrix) const;
+		void BoxBoundingVolumeFrustrumCulling(class GameObject *InGameObject, Matrix4x4 InVMMatrix) const;
 	private:
 		class GameEngine* mOwner;
 		class DepthBuffer *mDepthBuffer;

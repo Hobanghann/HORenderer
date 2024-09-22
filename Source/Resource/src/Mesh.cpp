@@ -6,13 +6,16 @@ Mesh::Mesh(const Mesh& InMesh) :
 	mName(InMesh.mName),
 	mVertexBuffer(InMesh.mVertexBuffer),
 	mIndexBuffer(InMesh.mIndexBuffer),
-	mSphereBoundingVolume(new SphereBoundingVolume(this)) {}
+	mSphereBoundingVolume(new SphereBoundingVolume(this)),
+	mBoxBoundingVolume(new BoxBoundingVolume(this)) 
+{}
 
 Mesh::Mesh(const std::string InName, const std::vector<Vertex> InVertices, const std::list<Triangle> InIndices) :
 	mName(InName),
 	mVertexBuffer(InVertices),
 	mIndexBuffer(InIndices),
-	mSphereBoundingVolume(new SphereBoundingVolume(this))
+	mSphereBoundingVolume(new SphereBoundingVolume(this)),
+	mBoxBoundingVolume(new BoxBoundingVolume(this))
 {}
 
 
@@ -46,4 +49,8 @@ std::list<Mesh::Triangle>{
 
 const SphereBoundingVolume *Mesh::GetSphereBoundingVolume() const {
 	return mSphereBoundingVolume;
+}
+
+const BoxBoundingVolume *Mesh::GetBoxBoundingVolume() const{
+	return mBoxBoundingVolume;
 }

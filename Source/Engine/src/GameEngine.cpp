@@ -208,7 +208,7 @@ void GameEngine::mRender()
 		Matrix4x4 vmMatrix = viewMatrix * box->GetTransform().GetModelingMatrix();
 
 		if(mbUseFrustrumCulling){
-			mRenderingPipeline.BoundingVolumeFrustrumCulling(box, vmMatrix);
+			mRenderingPipeline.BoxBoundingVolumeFrustrumCulling(box, vmMatrix);
 			if(!box->IsInFrustrum()){
 				numCulled++;
 				continue;

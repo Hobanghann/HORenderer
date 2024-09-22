@@ -29,6 +29,8 @@ namespace HO{
             inline bool IsInFrustrum(Vector3 InPoint) const;
 
             bool IsInFrustrum(const class SphereBoundingVolume &) const;
+
+            bool IsInFrustrum(const class BoxBoundingVolume &) const;
         private:
             float mFOV = 0.f;
             float mNearDistance = 5.5f;

@@ -21,6 +21,8 @@ namespace HO {
 
 		bool IsInPlane(const class SphereBoundingVolume &) const;
 
+		inline bool IsInPlane(const Vector3& InNearPoint, const Vector3 InFarPoint) const;
+
 		inline Vector3 GetNormalVector() const;
 
 		inline float GetDValue() const;
@@ -43,6 +45,27 @@ bool HO::Plane::IsInPlane(const Vector3& InPoint) const {
 	}
 	else {
 		isIn = true;
+	}
+	return isIn;
+}
+
+bool HO::Plane::IsInPlane(const Vector3& InNearPoint, const Vector3 InFarPoint) const{
+	float normalDotNear = mNormalVector.Dot(InNearPoint);
+	bool isIn;
+	//outside
+	if(normalDotNear + mDValue > 0.f){
+		isIn = false;
+	}
+	else {
+		float normalDotFar = mNormalVector.Dot(InFarPoint);
+		//intersect
+		if(normalDotFar + mDValue > 0.f){
+			isIn = true;
+		}
+		//fully inside
+		else {
+			isIn = true;
+		}
 	}
 	return isIn;
 }

@@ -19,7 +19,7 @@ namespace HO {
 		inline std::vector<Vertex> GetVertexBuffer() const;
 		inline const std::list<Triangle> GetIndexBuffer() const;
 		const SphereBoundingVolume *GetSphereBoundingVolume() const;
-
+		const BoxBoundingVolume *GetBoxBoundingVolume() const;
 	public:
 		static const Mesh BOX;
 
@@ -29,6 +29,7 @@ namespace HO {
 		const std::list<Triangle> mIndexBuffer;
 
 		const SphereBoundingVolume *mSphereBoundingVolume;
+		const BoxBoundingVolume *mBoxBoundingVolume;
 	};
 }
 

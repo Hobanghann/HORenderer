@@ -131,9 +131,19 @@ void RenderingPipeline::FrustrumCulling(GameObject *InGameObject, Matrix4x4 InVi
 	}
 }
 
-void RenderingPipeline::BoundingVolumeFrustrumCulling(GameObject *InGameObject, Matrix4x4 InVMMatrix) const{
+void RenderingPipeline::SphereBoundingVolumeFrustrumCulling(GameObject *InGameObject, Matrix4x4 InVMMatrix) const{
 	const Frustrum *frustrum = mOwner->mMainCamera.GetFrustrum();
 	if(frustrum->IsInFrustrum(InGameObject->GetMesh()->GetSphereBoundingVolume()->GetBuondingVolumeInViewSpace(InVMMatrix))) {
+		InGameObject->SetInFrustrum();
+	}
+	else {
+		InGameObject->GetOutOfFrustrum();
+	}
+}
+
+void RenderingPipeline::BoxBoundingVolumeFrustrumCulling(class GameObject *InGameObject, Matrix4x4 InVMMatrix) const{
+	const Frustrum *frustrum = mOwner->mMainCamera.GetFrustrum();
+	if(frustrum->IsInFrustrum(InGameObject->GetMesh()->GetBoxBoundingVolume()->GetBoundingVolumeInViewSpace(InVMMatrix))) {
 		InGameObject->SetInFrustrum();
 	}
 	else {
